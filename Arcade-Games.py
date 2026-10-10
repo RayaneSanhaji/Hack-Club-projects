@@ -36,11 +36,9 @@ def play_beep(frequency=440, duration=100):
     num_samples = int(sample_rate * (duration / 1000.0))
     buffer = bytearray()
 
-    # Scale amplitude proportionally to global_volume
     amplitude = int(16000 * global_volume)
 
     for i in range(num_samples):
-        # Square wave calculation
         wave_val = (
             amplitude
             if (i // int(sample_rate / frequency / 2)) % 2 == 0
@@ -62,7 +60,7 @@ def play_beep(frequency=440, duration=100):
 class Button:
 
     def __init__(
-        self, x, y, w, h, text, color, hover_color, text_color, font_size=22
+        self, x, y, w, h, text, color, hover_color, text_color, font_size=20
     ):
         self.rect = pygame.Rect(x, y, w, h)
         self.text = text
@@ -95,8 +93,8 @@ class Button:
 
 def select_mode_and_difficulty(game_name, has_2p_mode=True):
     """Sub-menu to choose difficulty and Mode (vs Bot / 2 Players)."""
-    font_title = pygame.font.SysFont("Arial", 36, bold=True)
-    font_sub = pygame.font.SysFont("Arial", 22)
+    font_title = pygame.font.SysFont("Arial", 32, bold=True)
+    font_sub = pygame.font.SysFont("Arial", 20)
     btn_back = Button(
         20, 20, 100, 40, "<- Back", RED, (255, 100, 100), TEXT_COLOR
     )
@@ -106,32 +104,32 @@ def select_mode_and_difficulty(game_name, has_2p_mode=True):
 
     btn_mode_bot = Button(
         220,
-        200,
+        190,
         170,
         40,
         "1 Player (vs Bot)",
         ACCENT_COLOR,
         ACCENT_HOVER,
         TEXT_COLOR,
-        18,
+        16,
     )
     btn_mode_2p = Button(
-        410, 200, 170, 40, "2 Players", BTN_COLOR, BTN_HOVER, TEXT_COLOR, 18
+        410, 190, 170, 40, "2 Players", BTN_COLOR, BTN_HOVER, TEXT_COLOR, 16
     )
 
     btn_easy = Button(
-        180, 340, 130, 40, "Easy", BTN_COLOR, BTN_HOVER, TEXT_COLOR
+        180, 320, 130, 40, "Easy", BTN_COLOR, BTN_HOVER, TEXT_COLOR
     )
     btn_med = Button(
-        335, 340, 130, 40, "Medium", ACCENT_COLOR, ACCENT_HOVER, TEXT_COLOR
+        335, 320, 130, 40, "Medium", ACCENT_COLOR, ACCENT_HOVER, TEXT_COLOR
     )
     btn_hard = Button(
-        490, 340, 130, 40, "Hard", BTN_COLOR, BTN_HOVER, TEXT_COLOR
+        490, 320, 130, 40, "Hard", BTN_COLOR, BTN_HOVER, TEXT_COLOR
     )
 
     btn_start = Button(
         WIDTH // 2 - 100,
-        450,
+        430,
         200,
         50,
         "Start Game",
@@ -165,7 +163,6 @@ def select_mode_and_difficulty(game_name, has_2p_mode=True):
             if btn_start.is_clicked(event):
                 return mode, difficulty
 
-        # Update visual states
         if has_2p_mode:
             btn_mode_bot.color = (
                 ACCENT_COLOR if mode == "vs_bot" else BTN_COLOR
@@ -177,16 +174,16 @@ def select_mode_and_difficulty(game_name, has_2p_mode=True):
         btn_hard.color = ACCENT_COLOR if difficulty == "Hard" else BTN_COLOR
 
         title = font_title.render(f"{game_name} - Setup", True, TEXT_COLOR)
-        screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 70))
+        screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 55))
 
         if has_2p_mode:
             lbl_mode = font_sub.render("Select Game Mode:", True, TEXT_COLOR)
-            screen.blit(lbl_mode, (WIDTH // 2 - lbl_mode.get_width() // 2, 160))
+            screen.blit(lbl_mode, (WIDTH // 2 - lbl_mode.get_width() // 2, 150))
             btn_mode_bot.draw(screen)
             btn_mode_2p.draw(screen)
 
         lbl_diff = font_sub.render("Select Difficulty:", True, TEXT_COLOR)
-        screen.blit(lbl_diff, (WIDTH // 2 - lbl_diff.get_width() // 2, 290))
+        screen.blit(lbl_diff, (WIDTH // 2 - lbl_diff.get_width() // 2, 275))
 
         btn_easy.draw(screen)
         btn_med.draw(screen)
@@ -228,11 +225,8 @@ def run_rps(mode, difficulty):
         TEXT_COLOR,
     )
 
-    p1_choice = ""
-    p2_choice = ""
-    result = ""
+    p1_choice, p2_choice, result, turn = "", "", "", 1
     choices = ["Rock", "Paper", "Scissors"]
-    turn = 1
 
     running = True
     while running:
@@ -258,9 +252,7 @@ def run_rps(mode, difficulty):
                 if chosen:
                     if mode == "vs_bot":
                         p1_choice = chosen
-                        # Bot behavior based on difficulty
                         if difficulty == "Easy":
-                            # Bot picks losing move often
                             losing_map = {
                                 "Rock": "Scissors",
                                 "Paper": "Rock",
@@ -272,7 +264,6 @@ def run_rps(mode, difficulty):
                                 else random.choice(choices)
                             )
                         elif difficulty == "Hard":
-                            # Bot counters player move often
                             counter_map = {
                                 "Rock": "Paper",
                                 "Paper": "Scissors",
@@ -399,8 +390,6 @@ def run_ttt(mode, difficulty):
         ]
         if not empty_cells:
             return
-
-        # Hard Bot checks winning or blocking moves
         if difficulty in ["Medium", "Hard"]:
             for symbol in ["O", "X"]:
                 for r, c in empty_cells:
@@ -409,8 +398,6 @@ def run_ttt(mode, difficulty):
                         board[r][c] = "O"
                         return
                     board[r][c] = ""
-
-        # Default random move
         r, c = random.choice(empty_cells)
         board[r][c] = "O"
 
@@ -502,7 +489,6 @@ def run_snake(mode, difficulty):
         TEXT_COLOR,
     )
 
-    # Speed adjusted by difficulty
     speeds = {"Easy": 150, "Medium": 100, "Hard": 60}
     speed = speeds.get(difficulty, 100)
 
@@ -790,7 +776,275 @@ def run_minesweeper(mode, difficulty):
 
 
 # ==========================================
-# 5. SETTINGS
+# 5. PONG (NOUVEAU JEU)
+# ==========================================
+def run_pong(mode, difficulty):
+    font_title = pygame.font.SysFont("Arial", 36, bold=True)
+    font_score = pygame.font.SysFont("Arial", 28, bold=True)
+    btn_back = Button(
+        20, 20, 100, 40, "<- Back", RED, (255, 100, 100), TEXT_COLOR
+    )
+    btn_restart = Button(
+        WIDTH // 2 - 75,
+        520,
+        150,
+        40,
+        "Play Again",
+        ACCENT_COLOR,
+        ACCENT_HOVER,
+        TEXT_COLOR,
+    )
+
+    paddle_heights = {"Easy": 100, "Medium": 80, "Hard": 60}
+    p_h = paddle_heights.get(difficulty, 80)
+    p_w = 15
+
+    p1_y = HEIGHT // 2 - p_h // 2
+    p2_y = HEIGHT // 2 - p_h // 2
+    p1_score = 0
+    p2_score = 0
+
+    ball_x = WIDTH // 2
+    ball_y = HEIGHT // 2
+    ball_speed_x = 4 if difficulty == "Easy" else (6 if difficulty == "Medium" else 8)
+    ball_speed_y = 3 if difficulty == "Easy" else (5 if difficulty == "Medium" else 7)
+    if random.choice([True, False]):
+        ball_speed_x *= -1
+
+    game_over = False
+    winner_text = ""
+
+    running = True
+    while running:
+        screen.fill(BG_COLOR)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if btn_back.is_clicked(event):
+                return
+
+        if game_over:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if btn_restart.is_clicked(event):
+                    p1_score, p2_score = 0, 0
+                    ball_x, ball_y = WIDTH // 2, HEIGHT // 2
+                    game_over = False
+
+            screen.fill(BG_COLOR)
+            title = font_title.render("PONG", True, TEXT_COLOR)
+            screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 80))
+            w_txt = font_title.render(winner_text, True, GREEN)
+            screen.blit(w_txt, (WIDTH // 2 - w_txt.get_width() // 2, 250))
+            btn_restart.draw(screen)
+            btn_back.draw(screen)
+            pygame.display.flip()
+            clock.tick(60)
+            continue
+
+        # Controls
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_w] and p1_y > 100:
+            p1_y -= 6
+        if keys[pygame.K_s] and p1_y < HEIGHT - p_h - 20:
+            p1_y += 6
+
+        if mode == "2p":
+            if keys[pygame.K_UP] and p2_y > 100:
+                p2_y -= 6
+            if keys[pygame.K_DOWN] and p2_y < HEIGHT - p_h - 20:
+                p2_y += 6
+        else:
+            # Bot AI based on difficulty
+            bot_speed = 3 if difficulty == "Easy" else (5 if difficulty == "Medium" else 7)
+            if p2_y + p_h // 2 < ball_y:
+                p2_y += bot_speed
+            elif p2_y + p_h // 2 > ball_y:
+                p2_y -= bot_speed
+            p2_y = max(100, min(HEIGHT - p_h - 20, p2_y))
+
+        # Ball movement
+        ball_x += ball_speed_x
+        ball_y += ball_speed_y
+
+        # Wall collisions top/bottom
+        if ball_y <= 100 or ball_y >= HEIGHT - 20:
+            ball_speed_y *= -1
+            play_beep(300, 50)
+
+        # Paddle collisions
+        p1_rect = pygame.Rect(40, p1_y, p_w, p_h)
+        p2_rect = pygame.Rect(WIDTH - 55, p2_y, p_w, p_h)
+        ball_rect = pygame.Rect(ball_x - 8, ball_y - 8, 16, 16)
+
+        if ball_rect.colliderect(p1_rect) and ball_speed_x < 0:
+            ball_speed_x *= -1
+            play_beep(600, 80)
+        elif ball_rect.colliderect(p2_rect) and ball_speed_x > 0:
+            ball_speed_x *= -1
+            play_beep(600, 80)
+
+        # Scoring
+        if ball_x < 0:
+            p2_score += 1
+            play_beep(150, 200)
+            ball_x, ball_y = WIDTH // 2, HEIGHT // 2
+            ball_speed_x *= -1
+        elif ball_x > WIDTH:
+            p1_score += 1
+            play_beep(150, 200)
+            ball_x, ball_y = WIDTH // 2, HEIGHT // 2
+            ball_speed_x *= -1
+
+        if p1_score >= 5 or p2_score >= 5:
+            game_over = True
+            winner_text = "Player 1 Wins!" if p1_score >= 5 else ("Player 2 Wins!" if mode == "2p" else "Computer Wins!")
+
+        # Draw Pong arena
+        title = font_title.render(f"Pong ({difficulty})", True, TEXT_COLOR)
+        screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 20))
+
+        score_text = font_score.render(f"{p1_score}   -   {p2_score}", True, ACCENT_COLOR)
+        screen.blit(score_text, (WIDTH // 2 - score_text.get_width() // 2, 65))
+
+        pygame.draw.line(screen, PANEL_COLOR, (0, 100), (WIDTH, 100), 2)
+        pygame.draw.rect(screen, ACCENT_COLOR, p1_rect, border_radius=4)
+        pygame.draw.rect(screen, RED, p2_rect, border_radius=4)
+        pygame.draw.circle(screen, TEXT_COLOR, (ball_x, ball_y), 8)
+
+        btn_back.draw(screen)
+        pygame.display.flip()
+        clock.tick(60)
+
+
+# ==========================================
+# 6. MEMORY MATCH (NOUVEAU JEU)
+# ==========================================
+def run_memory(mode, difficulty):
+    font_title = pygame.font.SysFont("Arial", 36, bold=True)
+    font_card = pygame.font.SysFont("Arial", 28, bold=True)
+    font_text = pygame.font.SysFont("Arial", 20)
+    btn_back = Button(
+        20, 20, 100, 40, "<- Back", RED, (255, 100, 100), TEXT_COLOR
+    )
+    btn_restart = Button(
+        WIDTH // 2 - 75,
+        540,
+        150,
+        40,
+        "Play Again",
+        ACCENT_COLOR,
+        ACCENT_HOVER,
+        TEXT_COLOR,
+    )
+
+    pairs_count = {"Easy": 4, "Medium": 8, "Hard": 12}.get(difficulty, 8)
+    total_cards = pairs_count * 2
+    cols = 4 if pairs_count <= 8 else 6
+    rows = total_cards // cols
+
+    symbols = list(range(1, pairs_count + 1)) * 2
+    random.shuffle(symbols)
+
+    cards = []
+    card_w, card_h = 75, 75
+    start_x = (WIDTH - (cols * (card_w + 10))) // 2
+    start_y = 150
+
+    for i, sym in enumerate(symbols):
+        r = i // cols
+        c = i % cols
+        rx = start_x + c * (card_w + 10)
+        ry = start_y + r * (card_h + 10)
+        cards.append(
+            {
+                "rect": pygame.Rect(rx, ry, card_w, card_h),
+                "symbol": sym,
+                "revealed": False,
+                "matched": False,
+            }
+        )
+
+    first_selection = None
+    can_click = True
+    timer = 0
+    moves = 0
+    matched_pairs = 0
+
+    running = True
+    while running:
+        screen.fill(BG_COLOR)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if btn_back.is_clicked(event):
+                return
+            if matched_pairs == pairs_count and btn_restart.is_clicked(event):
+                return run_memory(mode, difficulty)
+
+            if (
+                event.type == pygame.MOUSEBUTTONDOWN
+                and event.button == 1
+                and can_click
+                and matched_pairs < pairs_count
+            ):
+                mx, my = event.pos
+                for card in cards:
+                    if card["rect"].collidepoint(mx, my) and not card["revealed"] and not card["matched"]:
+                        card["revealed"] = True
+                        play_beep(500, 50)
+                        if first_selection is None:
+                            first_selection = card
+                        else:
+                            moves += 1
+                            if first_selection["symbol"] == card["symbol"]:
+                                first_selection["matched"] = True
+                                card["matched"] = True
+                                matched_pairs += 1
+                                play_beep(800, 100)
+                                first_selection = None
+                            else:
+                                can_click = False
+                                timer = pygame.time.get_ticks()
+
+        if not can_click and pygame.time.get_ticks() - timer > 700:
+            for card in cards:
+                if not card["matched"]:
+                    card["revealed"] = False
+            first_selection = None
+            can_click = True
+
+        title = font_title.render(f"Memory Match ({difficulty})", True, TEXT_COLOR)
+        screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 20))
+        m_txt = font_text.render(f"Moves: {moves} | Pairs: {matched_pairs}/{pairs_count}", True, TEXT_COLOR)
+        screen.blit(m_txt, (WIDTH // 2 - m_txt.get_width() // 2, 70))
+
+        for card in cards:
+            if card["revealed"] or card["matched"]:
+                pygame.draw.rect(screen, PANEL_COLOR, card["rect"], border_radius=8)
+                pygame.draw.rect(screen, ACCENT_COLOR, card["rect"], width=2, border_radius=8)
+                s_surf = font_card.render(str(card["symbol"]), True, TEXT_COLOR)
+                screen.blit(s_surf, s_surf.get_rect(center=card["rect"].center))
+            else:
+                pygame.draw.rect(screen, BTN_COLOR, card["rect"], border_radius=8)
+                pygame.draw.rect(screen, (255, 255, 255), card["rect"], width=2, border_radius=8)
+
+        if matched_pairs == pairs_count:
+            win_txt = font_title.render("You Won!", True, GREEN)
+            screen.blit(win_txt, (WIDTH // 2 - win_txt.get_width() // 2, 480))
+            btn_restart.draw(screen)
+
+        btn_back.draw(screen)
+        pygame.display.flip()
+        clock.tick(60)
+
+
+# ==========================================
+# 7. SETTINGS
 # ==========================================
 def run_settings():
     global global_volume
@@ -860,57 +1114,28 @@ def run_settings():
 # MAIN MENU
 # ==========================================
 def main_menu():
-    font_title = pygame.font.SysFont("Arial", 42, bold=True)
+    font_title = pygame.font.SysFont("Arial", 38, bold=True)
 
     btn_rps = Button(
-        WIDTH // 2 - 150,
-        160,
-        300,
-        50,
-        "Rock - Paper - Scissors",
-        BTN_COLOR,
-        BTN_HOVER,
-        TEXT_COLOR,
+        WIDTH // 2 - 160, 130, 320, 42, "Rock - Paper - Scissors", BTN_COLOR, BTN_HOVER, TEXT_COLOR, 18
     )
     btn_ttt = Button(
-        WIDTH // 2 - 150,
-        230,
-        300,
-        50,
-        "Tic-Tac-Toe",
-        BTN_COLOR,
-        BTN_HOVER,
-        TEXT_COLOR,
+        WIDTH // 2 - 160, 185, 320, 42, "Tic-Tac-Toe", BTN_COLOR, BTN_HOVER, TEXT_COLOR, 18
     )
     btn_snake = Button(
-        WIDTH // 2 - 150,
-        300,
-        300,
-        50,
-        "Snake",
-        BTN_COLOR,
-        BTN_HOVER,
-        TEXT_COLOR,
+        WIDTH // 2 - 160, 240, 320, 42, "Snake", BTN_COLOR, BTN_HOVER, TEXT_COLOR, 18
     )
     btn_mine = Button(
-        WIDTH // 2 - 150,
-        370,
-        300,
-        50,
-        "Minesweeper",
-        BTN_COLOR,
-        BTN_HOVER,
-        TEXT_COLOR,
+        WIDTH // 2 - 160, 295, 320, 42, "Minesweeper", BTN_COLOR, BTN_HOVER, TEXT_COLOR, 18
+    )
+    btn_pong = Button(
+        WIDTH // 2 - 160, 350, 320, 42, "Pong", BTN_COLOR, BTN_HOVER, TEXT_COLOR, 18
+    )
+    btn_memory = Button(
+        WIDTH // 2 - 160, 405, 320, 42, "Memory Match", BTN_COLOR, BTN_HOVER, TEXT_COLOR, 18
     )
     btn_settings = Button(
-        WIDTH // 2 - 150,
-        450,
-        300,
-        50,
-        "Settings (Sound)",
-        ACCENT_COLOR,
-        ACCENT_HOVER,
-        TEXT_COLOR,
+        WIDTH // 2 - 160, 475, 320, 42, "Settings (Sound)", ACCENT_COLOR, ACCENT_HOVER, TEXT_COLOR, 18
     )
 
     while True:
@@ -929,23 +1154,33 @@ def main_menu():
                 if mode:
                     run_ttt(mode, diff)
             elif btn_snake.is_clicked(event):
-                mode, diff = select_mode_and_difficulty("Snake", False)
+                _, diff = select_mode_and_difficulty("Snake", False)
                 if diff:
                     run_snake("vs_bot", diff)
             elif btn_mine.is_clicked(event):
-                mode, diff = select_mode_and_difficulty("Minesweeper", False)
+                _, diff = select_mode_and_difficulty("Minesweeper", False)
                 if diff:
                     run_minesweeper("vs_bot", diff)
+            elif btn_pong.is_clicked(event):
+                mode, diff = select_mode_and_difficulty("Pong")
+                if mode:
+                    run_pong(mode, diff)
+            elif btn_memory.is_clicked(event):
+                _, diff = select_mode_and_difficulty("Memory Match", False)
+                if diff:
+                    run_memory("vs_bot", diff)
             elif btn_settings.is_clicked(event):
                 run_settings()
 
         title = font_title.render("CLASSIC RETRO ARCADE", True, TEXT_COLOR)
-        screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 60))
+        screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 45))
 
         btn_rps.draw(screen)
         btn_ttt.draw(screen)
         btn_snake.draw(screen)
         btn_mine.draw(screen)
+        btn_pong.draw(screen)
+        btn_memory.draw(screen)
         btn_settings.draw(screen)
 
         pygame.display.flip()
